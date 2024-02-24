@@ -29,10 +29,11 @@ def kLargestCategories(files: list[File], k: int) -> list[str]:
     categoryDict = dict()
     for file in files:
         for category in file.categories:
-            if category in categoryDict:
-                categoryDict[category] += 1
-            else:
-                categoryDict[category] = 1
+            # if category in categoryDict:
+            #     categoryDict[category] += 1
+            # else:
+            #     categoryDict[category] = 1
+            categoryDict[category] = categoryDict.get(category, 0) + 1
 
     sortedCategories = sorted(categoryDict.items(), key=lambda x: (-x[1], x[0]))
 
@@ -43,7 +44,22 @@ def kLargestCategories(files: list[File], k: int) -> list[str]:
 Task 3
 """
 def largestFileSize(files: list[File]) -> int:
-    return 0
+    if not files: return 0
+    filesDict = {file.id: file for file in files}
+
+    fileSizeDict = dict()
+    for file in files:
+        updateFileAndParentsSize(filesDict, file, fileSizeDict)
+
+    return max(fileSizeDict.values())
+
+
+def updateFileAndParentsSize(filesDict: dict[int, File], file: File, fileSizeDict: dict[int, int]):
+    fileSizeDict[file.id] = fileSizeDict.get(file.id, 0) + file.size
+
+    if file.parent == -1: return
+    updateFileAndParentsSize(filesDict, filesDict[file.parent], fileSizeDict)
+
 
 
 if __name__ == '__main__':
