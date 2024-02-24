@@ -26,7 +26,17 @@ def leafFiles(files: list[File]) -> list[str]:
 Task 2
 """
 def kLargestCategories(files: list[File], k: int) -> list[str]:
-    return []
+    categoryDict = dict()
+    for file in files:
+        for category in file.categories:
+            if category in categoryDict:
+                categoryDict[category] += 1
+            else:
+                categoryDict[category] = 1
+
+    sortedCategories = sorted(categoryDict.items(), key=lambda x: (-x[1], x[0]))
+
+    return [category[0] for category in sortedCategories][0:k]
 
 
 """
