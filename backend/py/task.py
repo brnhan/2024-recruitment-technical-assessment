@@ -13,10 +13,14 @@ class File:
 Task 1
 """
 def leafFiles(files: list[File]) -> list[str]:
+    # create a list of all parent ids
     parents = {file.parent for file in files if file.parent != -1}
+
+    # copy all ids and take intersection to get leaf ids
     possibleLeafs = {file.id for file in files}
     leafFilesSet = possibleLeafs.difference(parents)
 
+    # create dictionary with all leaf ids and corresp names, then extract leaf file names
     fileDict = {file.id: file.name for file in files}
     leafFiles = [fileDict[id] for id in leafFilesSet]
     return leafFiles
@@ -27,16 +31,16 @@ Task 2
 """
 def kLargestCategories(files: list[File], k: int) -> list[str]:
     categoryDict = dict()
+
+    # tally up all file category instances
     for file in files:
         for category in file.categories:
-            # if category in categoryDict:
-            #     categoryDict[category] += 1
-            # else:
-            #     categoryDict[category] = 1
             categoryDict[category] = categoryDict.get(category, 0) + 1
 
+    # sort by descending first touple (i.e, descending category file number), then if equivalence by zeroeth touple (i.e. name alphabetically)
     sortedCategories = sorted(categoryDict.items(), key=lambda x: (-x[1], x[0]))
 
+    # return up until k categories
     return [category[0] for category in sortedCategories][0:k]
 
 
@@ -49,16 +53,20 @@ def largestFileSize(files: list[File]) -> int:
 
     fileSizeDict = dict()
     for file in files:
-        updateFileAndParentsSize(filesDict, file, fileSizeDict)
+        # first add current file size to its dictionary entry
+        fileSizeDict[file.id] = fileSizeDict.get(file.id, 0) + file.size
+
+        # recursively add current file size to all parents
+        if file.parent != -1: updateParentsSize(filesDict, filesDict[file.parent], fileSizeDict, file.size)
 
     return max(fileSizeDict.values())
 
 
-def updateFileAndParentsSize(filesDict: dict[int, File], file: File, fileSizeDict: dict[int, int]):
-    fileSizeDict[file.id] = fileSizeDict.get(file.id, 0) + file.size
+def updateParentsSize(filesDict: dict[int, File], parent: File, fileSizeDict: dict[int, int], childFileSize: int):
+    fileSizeDict[parent.id] = fileSizeDict.get(parent.id, 0) + childFileSize
 
-    if file.parent == -1: return
-    updateFileAndParentsSize(filesDict, filesDict[file.parent], fileSizeDict)
+    if parent.parent == -1: return
+    updateParentsSize(filesDict, filesDict[parent.parent], fileSizeDict, childFileSize)
 
 
 
