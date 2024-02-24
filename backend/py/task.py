@@ -13,7 +13,13 @@ class File:
 Task 1
 """
 def leafFiles(files: list[File]) -> list[str]:
-    return []
+    parents = {file.parent for file in files if file.parent != -1}
+    possibleLeafs = {file.id for file in files}
+    leafFilesSet = possibleLeafs.difference(parents)
+
+    fileDict = {file.id: file.name for file in files}
+    leafFiles = [fileDict[id] for id in leafFilesSet]
+    return leafFiles
 
 
 """
